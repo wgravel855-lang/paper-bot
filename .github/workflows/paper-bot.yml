@@ -1,0 +1,26 @@
+name: paper-bot
+on:
+  schedule:
+    - cron: "17 * * * *"     # every hour (strategy uses 6-hour candles)
+  workflow_dispatch: {}       # "Run workflow" button for a manual run
+permissions:
+  contents: write
+concurrency: paper-bot
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - run: python bot.py --once
+      - name: Save results
+        run: |
+          git config user.name "paper-bot"
+          git config user.email "paper-bot@users.noreply.github.com"
+          git add data/live_* index.html
+          git diff --cached --quiet || git commit -m "paper-bot: update $(date -u +%F' '%H:%M)"
+          git push
