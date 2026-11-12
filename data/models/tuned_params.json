@@ -1,106 +1,15 @@
 {
- "trained_at": "2026-11-12 21:38 UTC",
+ "trained_at": "2026-11-12 22:37 UTC",
  "params": {
   "breakout_lookback": 40,
   "stop_atr": 3.0,
   "volume_spike": 1.5
  },
- "adopted": true,
- "candidate": {
-  "breakout_lookback": 40,
-  "stop_atr": 3.0,
-  "volume_spike": 1.5
- },
- "candidate_train": {
-  "return": -0.10078520720986273,
-  "max_dd": 0.15846483818544022,
+ "last_year": {
+  "return": 0.22307572180752233,
+  "max_dd": 0.11166301270974854,
   "trades": 89,
-  "win_rate": 0.24719101123595505
+  "win_rate": 0.3146067415730337
  },
- "candidate_unseen": {
-  "return": 0.3137649047064943,
-  "max_dd": 0.09301967243369869,
-  "trades": 25,
-  "win_rate": 0.48
- },
- "default_train": {
-  "return": -0.13165298018991622,
-  "max_dd": 0.20353447147188752,
-  "trades": 116,
-  "win_rate": 0.3017241379310345
- },
- "default_unseen": {
-  "return": 0.3210482003123254,
-  "max_dd": 0.10947131255583342,
-  "trades": 39,
-  "win_rate": 0.358974358974359
- },
- "verdict": "The picked combo beat the defaults on the last 90 unseen days, scored as return minus half the biggest drop.",
- "grid_top5": [
-  {
-   "params": {
-    "breakout_lookback": 40,
-    "stop_atr": 3.0,
-    "volume_spike": 1.5
-   },
-   "train": {
-    "return": -0.10078520720986273,
-    "max_dd": 0.15846483818544022,
-    "trades": 89,
-    "win_rate": 0.24719101123595505
-   }
-  },
-  {
-   "params": {
-    "breakout_lookback": 10,
-    "stop_atr": 2.0,
-    "volume_spike": 1.5
-   },
-   "train": {
-    "return": -0.0976248141242273,
-    "max_dd": 0.16602135046315403,
-    "trades": 146,
-    "win_rate": 0.3424657534246575
-   }
-  },
-  {
-   "params": {
-    "breakout_lookback": 10,
-    "stop_atr": 3.0,
-    "volume_spike": 1.5
-   },
-   "train": {
-    "return": -0.11603729034579824,
-    "max_dd": 0.19498030187245763,
-    "trades": 112,
-    "win_rate": 0.25892857142857145
-   }
-  },
-  {
-   "params": {
-    "breakout_lookback": 40,
-    "stop_atr": 3.0,
-    "volume_spike": 1.0
-   },
-   "train": {
-    "return": -0.1165898846081348,
-    "max_dd": 0.1976742170845096,
-    "trades": 97,
-    "win_rate": 0.25773195876288657
-   }
-  },
-  {
-   "params": {
-    "breakout_lookback": 40,
-    "stop_atr": 2.0,
-    "volume_spike": 1.5
-   },
-   "train": {
-    "return": -0.13596013269662,
-    "max_dd": 0.15920778532579394,
-    "trades": 118,
-    "win_rate": 0.3389830508474576
-   }
-  }
- ]
+ "verdict": "In the walk-forward test this tuning method beat the fixed rules in 7 of 12 periods (average +4.3% vs +1.7% per period)."
 }

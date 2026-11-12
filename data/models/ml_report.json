@@ -1,19 +1,20 @@
 {
- "trained_at": "2026-11-12 21:38 UTC",
- "threshold": 0.33073693884885735,
+ "trained_at": "2026-11-12 22:37 UTC",
+ "threshold": 0.3414077710224486,
  "target": "price more than 1.5% higher 24 hours later",
- "train_rows": 43826,
+ "train_rows": 338627,
+ "coins": 38,
  "unseen_days": 90,
- "unseen_auc": 0.5906938278912236,
- "unseen_base_rate": 0.30532212885154064,
- "unseen_hit_rate_approved": 0.4024982650936849,
- "unseen_avg_24h_return_approved": 0.012067760329923216,
- "unseen_avg_24h_return_all": 0.0043309765360056976,
+ "unseen_auc": 0.5942256447398305,
+ "unseen_base_rate": 0.32728415138971023,
+ "unseen_hit_rate_approved": 0.4053545746210864,
+ "auc_avg_all_periods": 0.5657513786512397,
+ "periods": 12,
  "trading_unseen_ml": {
-  "return": 0.21137520021509326,
-  "max_dd": 0.09618081700414594,
-  "trades": 34,
-  "win_rate": 0.38235294117647056
+  "return": 0.41444611736082826,
+  "max_dd": 0.09043762684180534,
+  "trades": 30,
+  "win_rate": 0.4666666666666667
  },
  "trading_unseen_fixed": {
   "return": 0.3210482003123254,
@@ -21,85 +22,81 @@
   "trades": 39,
   "win_rate": 0.358974358974359
  },
- "trading_dip": {
-  "tuning_year": {
-   "return": -0.003563181098083623,
-   "max_dd": 0.040361930683061154,
-   "trades": 22,
-   "win_rate": 0.4090909090909091
-  },
-  "unseen": {
-   "return": -0.008950380033336591,
-   "max_dd": 0.05263889460731719,
-   "trades": 25,
-   "win_rate": 0.56
-  }
- },
  "importances": [
   {
    "feature": "atr_pct",
    "name": "Volatility",
-   "importance": 0.03916189865509193
-  },
-  {
-   "feature": "vol_ratio",
-   "name": "Volume surge",
-   "importance": 0.00814790152685981
-  },
-  {
-   "feature": "trend_20_50",
-   "name": "Trend strength (EMA20 vs EMA50)",
-   "importance": 0.005492502712834302
+   "importance": 0.07553553823546703
   },
   {
    "feature": "btc_trend",
    "name": "Bitcoin trend",
-   "importance": 0.004884060592110291
+   "importance": 0.020224189972374112
   },
   {
    "feature": "breakout_dist",
-   "name": "Distance from 20-bar high",
-   "importance": 0.0032333146997249504
+   "name": "Distance from 5-day high",
+   "importance": 0.0028532834890966363
   },
   {
-   "feature": "dist_ema20",
-   "name": "Distance from 20-bar average",
-   "importance": 0.0031952254118576087
-  },
-  {
-   "feature": "ret_1",
-   "name": "Last-candle return",
-   "importance": 0.0031192386526804894
-  },
-  {
-   "feature": "rsi_14",
-   "name": "RSI (overbought/oversold)",
-   "importance": 0.0025653546414127204
-  },
-  {
-   "feature": "ret_28",
+   "feature": "ret_168",
    "name": "1-week momentum",
-   "importance": 0.0024880251663323603
+   "importance": 0.0024048038558750115
   },
   {
-   "feature": "ret_4",
-   "name": "1-day momentum",
-   "importance": 0.0019673254195302268
+   "feature": "ret_6",
+   "name": "6-hour momentum",
+   "importance": 0.002389931464174544
   },
   {
-   "feature": "btc_ret_4",
-   "name": "Bitcoin 1-day momentum",
-   "importance": 0.0009723455328664773
+   "feature": "dist_ema24",
+   "name": "Distance from 1-day average",
+   "importance": 0.0023131017457238925
+  },
+  {
+   "feature": "trend_24_96",
+   "name": "Trend strength (1-day vs 4-day average)",
+   "importance": 0.0017305129018985916
+  },
+  {
+   "feature": "vol_ratio",
+   "name": "Volume surge (last 6h)",
+   "importance": 0.0015552605654500045
   },
   {
    "feature": "hour",
    "name": "Time of day",
-   "importance": 0.00024297677375510288
+   "importance": 0.001510338682184272
   },
   {
-   "feature": "ret_12",
+   "feature": "ret_72",
    "name": "3-day momentum",
-   "importance": -0.0002578562581521486
+   "importance": 0.0008411280785282083
+  },
+  {
+   "feature": "ret_1",
+   "name": "Last-hour return",
+   "importance": 0.0007824980896961783
+  },
+  {
+   "feature": "rsi_14",
+   "name": "RSI (overbought/oversold)",
+   "importance": -0.0002736580262151511
+  },
+  {
+   "feature": "btc_ret_24",
+   "name": "Bitcoin 1-day momentum",
+   "importance": -0.0003095985422910674
+  },
+  {
+   "feature": "ret_24",
+   "name": "1-day momentum",
+   "importance": -0.00044761441250799433
+  },
+  {
+   "feature": "drawdown_30d",
+   "name": "Drop from 30-day high",
+   "importance": -0.002206412508081993
   }
  ]
 }

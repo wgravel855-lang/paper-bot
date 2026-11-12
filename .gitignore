@@ -1,3 +1,4 @@
 __pycache__/
 data/backtest*
 backtest*_dashboard.html
+data/cache/

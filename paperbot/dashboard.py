@@ -145,6 +145,7 @@ def build_compare(out_path, cfg):
     ml = _json("data/models/ml_report.json")
     tuned = _json("data/models/tuned_params.json")
     history = _json("data/models/training_history.json", [])
+    wf = _json("data/models/walkforward.json")
     shared = _json("data/live_shared.json", {}) or {}
     preds = _read("data/live_ml_predictions.csv")
     resolved = [p for p in preds if p["ret_24h"] != ""]
@@ -158,7 +159,7 @@ def build_compare(out_path, cfg):
 
     payload = {
         "accounts": accts, "series": series, "start": cfg.starting_cash,
-        "ml": ml, "tuned": tuned, "history": history,
+        "ml": ml, "tuned": tuned, "history": history, "wf": wf,
         "report": {"approved": card([p for p in resolved if p["approved"] == "1"]),
                    "rejected": card([p for p in resolved if p["approved"] == "0"]),
                    "pending": len(preds) - len(resolved), "total": len(preds)},
@@ -207,13 +208,14 @@ th{color:var(--ink2);font-weight:600}.num{text-align:right;font-variant-numeric:
 They differ only in how they decide. The model retrains every Sunday. Judge them after weeks, not hours.</div>
 <div class="grid3" id="accts"></div>
 <div class="card"><h2>Balance over time</h2><div class="legend" id="legend"></div><svg class="chart" id="chart" role="img" aria-label="Balance of the three accounts over time"></svg><div id="tip"></div></div>
+<div class="card"><h2 id="wfh">Tested on past periods</h2><div id="wf"></div></div>
 <div class="two">
  <div class="card"><h2>What the model learned</h2><div id="learned"></div></div>
  <div class="card"><h2>Model report card (live)</h2><div id="report"></div></div>
 </div>
 <div class="two">
  <div class="card"><h2>Self-tuning: this week's settings</h2><div id="tuned"></div></div>
- <div class="card"><h2>Training history (unseen 90-day test)</h2><div class="tw" id="hist"></div></div>
+ <div class="card"><h2>Training history (average per period)</h2><div class="tw" id="hist"></div></div>
 </div>
 <div class="card"><h2>Trade log: every trade with its reason</h2><div class="tabs" id="tabs" role="tablist"></div><div class="tw" id="log"></div></div>
 </main><script>
@@ -261,11 +263,10 @@ const top=m.importances.filter(i=>i.importance>0).slice(0,8),mx=Math.max(...top.
 $('learned').innerHTML=`<p class="note" style="margin:0 0 8px">Signals the model relies on most (how much its accuracy drops when the signal is scrambled):</p>`+
 top.map(i=>`<div class="bar"><span>${esc(i.name)}</span><div class="track"><div class="fill" style="width:${100*i.importance/mx}%"></div></div><span class="num muted">${(i.importance*100).toFixed(1)}</span></div>`).join('')+
 `<div style="margin-top:10px"><div class="stat"><span>Goal</span><b>${esc(m.target)}</b></div>
-<div class="stat"><span>Accuracy score on unseen ${m.unseen_days} days (AUC, 0.5 = coin flip)</span><b>${m.unseen_auc.toFixed(3)}</b></div>
-<div class="stat"><span>How often it happened, any situation</span><b>${pct(m.unseen_base_rate,0).replace('+','')}</b></div>
-<div class="stat"><span>How often it happened when the model approved</span><b>${pct(m.unseen_hit_rate_approved,0).replace('+','')}</b></div>
-<div class="stat"><span>Trading test on unseen days: ML vs fixed rules</span><b><span class="${cls(m.trading_unseen_ml.return)}">${pct(m.trading_unseen_ml.return)}</span> vs <span class="${cls(m.trading_unseen_fixed.return)}">${pct(m.trading_unseen_fixed.return)}</span></b></div>
-<div class="stat"><span>Last trained</span><b>${esc(m.trained_at)} on ${m.train_rows.toLocaleString()} examples</b></div></div>`})();
+<div class="stat"><span>Accuracy score, average over ${m.periods} unseen periods (AUC, 0.5 = coin flip)</span><b>${m.auc_avg_all_periods.toFixed(3)}</b></div>
+<div class="stat"><span>Latest 90 days: how often the price rose 1.5%+, any situation</span><b>${pct(m.unseen_base_rate,0).replace('+','')}</b></div>
+<div class="stat"><span>Latest 90 days: how often, when the model approved</span><b>${pct(m.unseen_hit_rate_approved,0).replace('+','')}</b></div>
+<div class="stat"><span>Last trained</span><b>${esc(m.trained_at)} · ${m.train_rows.toLocaleString()} examples from ${m.coins} coins</b></div></div>`})();
 // report card
 (()=>{const r=D.report,row=(k,c)=>c?`<div class="stat"><span>${k} (${c.n})</span><b><span class="${cls(c.avg)}">${pct(c.avg,2)}</span> avg 24h move · ${Math.round(c.hit*100)}% rose 1.5%+</b></div>`:`<div class="stat"><span>${k}</span><b class="muted">none yet</b></div>`;
 $('report').innerHTML=`<p class="note" style="margin:0 0 8px">Every buy signal the ML bot sees gets a prediction. 24 hours later we record what actually happened. If approved signals don't beat rejected ones over time, the model isn't helping.</p>`+
@@ -275,12 +276,22 @@ row('Signals the model approved',r.approved)+row('Signals the model rejected',r.
 (()=>{const t=D.tuned;if(!t){$('tuned').innerHTML='<p class="muted">Not tuned yet.</p>';return}const p=t.params;
 const r=(k,a,b)=>`<div class="stat"><span>${k}</span><b>${a}</b></div>`;
 $('tuned').innerHTML=r('Breakout window',p.breakout_lookback+' candles')+r('Trailing stop',p.stop_atr+' × volatility')+r('Volume needed',p.volume_spike+'× average')+
-r('Picked combo: tuning year → unseen 90 days',`${pct(t.candidate_train.return)} → ${pct(t.candidate_unseen.return)}`)+
-r('Default settings: tuning year → unseen 90 days',`${pct(t.default_train.return)} → ${pct(t.default_unseen.return)}`)+
-`<p class="note"><b>${t.adopted?'Adopted':'Not adopted'}.</b> ${esc(t.verdict)} Tuned ${esc(t.trained_at)}.</p>`})();
+r('How these settings did over the past year',`${pct(t.last_year.return)} (${t.last_year.trades} trades)`)+
+`<p class="note">${esc(t.verdict)} Tuned ${esc(t.trained_at)}.</p>`})();
 // history
 $('hist').innerHTML=D.history.length?`<table><thead><tr><th>Trained (UTC)</th><th class="num">Fixed</th><th class="num">Tuned</th><th class="num">ML</th><th class="num">Dip</th><th class="num">AUC</th></tr></thead><tbody>`+
-D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.slice(0,16))}</td><td class="num ${cls(h.unseen_fixed)}">${pct(h.unseen_fixed)}</td><td class="num ${cls(h.unseen_tuned)}">${pct(h.unseen_tuned)}</td><td class="num ${cls(h.unseen_ml)}">${pct(h.unseen_ml)}</td><td class="num ${cls(h.unseen_dip)}">${h.unseen_dip==null?'—':pct(h.unseen_dip)}</td><td class="num">${h.auc.toFixed(3)}</td></tr>`).join('')+'</tbody></table>':'<p class="muted">No training runs yet.</p>';
+D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.slice(0,16))}</td>`+['fixed','tuned','ml','dip'].map(k=>`<td class="num ${cls(h['wf_avg_'+k])}">${pct(h['wf_avg_'+k])}</td>`).join('')+`<td class="num">${h.auc.toFixed(3)}</td></tr>`).join('')+'</tbody></table><p class="note">Average return per 90-day period in that week\'s walk-forward test.</p>':'<p class="muted">No training runs yet.</p>';
+// walk-forward
+(()=>{const w=D.wf;if(!w){$('wf').innerHTML='<p class="muted">Not run yet.</p>';return}const S=w.summary,n=w.periods.length;
+$('wfh').textContent=`Tested on ${n} past periods of ${w.period_days} days`;
+const names={fixed:'Fixed rules',tuned:'Self-tuning',ml:'ML filter',dip:'Buy the dip',btc:'Just hold Bitcoin'},slot={fixed:1,tuned:2,ml:3,dip:4};
+const sw=k=>slot[k]?`<span class="sw" style="display:inline-block;background:var(--s${slot[k]})"></span> `:'';
+$('wf').innerHTML=`<p class="note" style="margin:0 0 10px">Before each period, every bot was trained or tuned using <b>only data from before it</b>, then traded it with fees, the same as it would live. Luck in one period averages out across ${n}.</p>
+<div class="tw"><table><thead><tr><th>Strategy</th><th class="num">Avg per period</th><th class="num">Periods up</th><th class="num">Beat fixed rules</th><th class="num">Beat holding BTC</th><th class="num">Worst period</th><th class="num">All periods chained</th></tr></thead><tbody>`+
+['fixed','tuned','ml','dip','btc'].map(k=>{const x=S[k];return `<tr><td style="white-space:nowrap">${sw(k)}${names[k]}</td><td class="num ${cls(x.avg)}">${pct(x.avg)}</td><td class="num">${x.positive} of ${n}</td><td class="num">${x.beat_fixed==null||k==='fixed'?'—':x.beat_fixed+' of '+n}</td><td class="num">${k==='btc'?'—':x.beat_btc+' of '+n}</td><td class="num ${cls(x.worst)}">${pct(x.worst)}</td><td class="num ${cls(x.compounded)}">${pct(x.compounded,0)}</td></tr>`}).join('')+
+`</tbody></table></div><details style="margin-top:10px"><summary style="cursor:pointer;color:var(--ink2)">Show each period</summary><div class="tw"><table><thead><tr><th>Period</th><th class="num">BTC</th><th class="num">Fixed</th><th class="num">Tuned</th><th class="num">ML</th><th class="num">Dip</th><th class="num">Model AUC</th></tr></thead><tbody>`+
+w.periods.slice().reverse().map(r=>`<tr><td style="white-space:nowrap">${esc(r.start)} → ${esc(r.end)}</td><td class="num ${cls(r.btc)}">${pct(r.btc)}</td>`+['fixed','tuned','ml','dip'].map(k=>`<td class="num ${cls(r[k].return)}">${pct(r[k].return)}</td>`).join('')+`<td class="num">${r.auc.toFixed(3)}</td></tr>`).join('')+
+`</tbody></table></div></details><p class="note">"All periods chained" = what $1 would have become trading every period back to back. Coins are today's 15 most-traded, so results are flattered (survivorship bias).</p>`})();
 // trade logs
 function showLog(i){const a=D.accounts[i];[...$('tabs').children].forEach((b,j)=>b.setAttribute('aria-selected',j===i));
 $('log').innerHTML=a.trades.length?`<table><thead><tr><th>Time (UTC)</th><th>Pair</th><th>Side</th><th class="num">Price</th><th class="num">P&amp;L</th><th class="num">Balance</th><th>Reason</th></tr></thead><tbody>`+
