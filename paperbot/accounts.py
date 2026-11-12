@@ -11,6 +11,7 @@ ACCOUNTS = {
     "baseline": "Fixed rules (original bot)",
     "tuned": "Self-tuning (re-picks its settings weekly)",
     "ml": "ML filter (model approves each trade)",
+    "dip": "Buy the dip (community-style strategy)",
 }
 
 
@@ -21,6 +22,8 @@ def make(name):
         with open(TUNED_PATH) as f:
             for k, v in json.load(f)["params"].items():
                 setattr(cfg, k, v)
+    if name == "dip":
+        cfg.strategy = "dip"
     if name == "ml":
         gate = MLGate()
     return cfg, gate

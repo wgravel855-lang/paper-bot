@@ -1,11 +1,14 @@
 """One decision step, shared by the backtest and the live loop so both behave identically."""
-from . import strategy, sizer, riskcheck
+from . import strategy as breakout, strategy_dip, sizer, riskcheck
+
+STRATEGIES = {"breakout": breakout, "dip": strategy_dip}
 
 
 def step(t, history, portfolio, cfg, logger, quotes=None, gate=None, equity_on_close=True):
     """history: {pair: bars up to and including the latest closed bar}.
     quotes: optional {pair: {'bid','ask'}} for live spread-aware fills."""
     quotes = quotes or {}
+    strategy = STRATEGIES[getattr(cfg, "strategy", "breakout")]
     prices = {pid: bars[-1]["close"] for pid, bars in history.items() if bars}
 
     # exits first

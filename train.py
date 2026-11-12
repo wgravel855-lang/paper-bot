@@ -73,6 +73,12 @@ def main():
     best_val = simulate(hist, _cfg(best_params), cutoff, t_end)
     def_train = simulate(hist, base, tune_start, cutoff)
     def_val = simulate(hist, base, cutoff, t_end)
+    dip_cfg = Config()
+    dip_cfg.strategy = "dip"
+    dip_train = simulate(hist, dip_cfg, tune_start, cutoff)
+    dip_val = simulate(hist, dip_cfg, cutoff, t_end)
+    log(f"[dip] tuning year {dip_train['return']:+.1%} ({dip_train['trades']} trades), "
+        f"unseen 90d {dip_val['return']:+.1%} ({dip_val['trades']} trades)")
     adopted = score(best_val) >= score(def_val) and best_params != default_params
     tuned = {
         "trained_at": time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()),
@@ -137,6 +143,7 @@ def main():
         "unseen_avg_24h_return_approved": float(test["fwd"][approved].mean()) if approved.any() else None,
         "unseen_avg_24h_return_all": float(test["fwd"].mean()),
         "trading_unseen_ml": ml_val, "trading_unseen_fixed": def_val,
+        "trading_dip": {"tuning_year": dip_train, "unseen": dip_val},
         "importances": importances,
     }
     _save("ml_report.json", report)
@@ -145,7 +152,8 @@ def main():
     hist_log = json.load(open(hpath)) if os.path.exists(hpath) else []
     hist_log.append({"date": tuned["trained_at"], "auc": auc, "tuned_adopted": adopted,
                      "unseen_fixed": def_val["return"], "unseen_tuned": best_val["return"],
-                     "unseen_ml": ml_val["return"]})
+                     "unseen_ml": ml_val["return"], "unseen_dip": dip_val["return"],
+                     "year_fixed": def_train["return"], "year_dip": dip_train["return"]})
     _save("training_history.json", hist_log[-52:])
     log("[done] models written to data/models/")
 

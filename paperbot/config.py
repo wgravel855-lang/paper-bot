@@ -23,7 +23,9 @@ class Config:
     max_bar_move_pct: float = 0.25    # skip if any recent candle moved > 25%
     stablecoins: tuple = ("USDT", "USDC", "DAI", "PYUSD", "EURC", "GUSD", "PAX", "FDUSD", "USDS")
 
-    # --- strategy: trend-following breakout ---
+    # --- strategy ---
+    strategy: str = "breakout"        # "breakout" or "dip"
+    # trend-following breakout settings
     ema_fast: int = 20
     ema_slow: int = 50
     breakout_lookback: int = 20       # close above the highest high of last N bars

@@ -17,11 +17,12 @@ Strategy (`paperbot/strategy.py`): trend-following breakout. It buys when price 
 20-bar high while EMA20 > EMA50 and volume is at least 1.5x average. It sells on a 2.5-ATR trailing
 stop, when EMA20 crosses below EMA50, or after 72 bars. All settings are in `paperbot/config.py`.
 
-## Three accounts, side by side
+## Four accounts, side by side
 | Account | How it decides |
 |---|---|
 | Fixed rules | The strategy above with fixed settings |
 | Self-tuning | Every Sunday it re-tests 12 setting combos on the past year, then keeps the winner only if it also wins on the last 90 days it never saw |
+| Buy the dip | Community-style mean reversion (`paperbot/strategy_dip.py`): buys a sharp drop (below the lower Bollinger band, RSI < 35) while the coin is above its 200-bar average; sells on the bounce back to the 20-bar average, a 2.5-ATR stop, or after 3 days |
 | ML filter | Same buy signals, but a gradient-boosted model (scikit-learn) must approve each one. It predicts "price >1.5% higher in 24h" from 13 features (momentum, volume surge, volatility, Bitcoin trend, ...) |
 
 Training (`train.py`) runs every Sunday via `.github/workflows/train.yml`. Each run grades the tuned settings and
@@ -42,6 +43,9 @@ On GitHub, `.github/workflows/paper-bot.yml` runs `bot.py --once` every hour.
 - First training run (2026-11-12): every setting combo **lost money** over the tuning year (-10% to -21%).
   On the last 90 days the fixed rules made +32%, the tuned settings +31% with smaller drops, and the ML filter +35%.
   That's one period, mostly a rising market, so it is not proof.
+- Buy the dip was roughly flat: -0.4% over the tuning year and -0.9% on the last 90 days, about 25 trades each.
+- Retraining a few hours later with slightly newer data moved the ML filter's 90-day result from +35% to +21%.
+  Results this sensitive to small data changes should not be trusted yet.
 - The model's accuracy score (AUC) was 0.586, where 0.5 is a coin flip. Situations it approved hit the +1.5% target
   40% of the time vs 31% for all situations. That is a modest edge that fees can easily eat.
 - The backtest uses today's most-liquid coins (survivorship bias), so real results would likely be worse.

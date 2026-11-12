@@ -139,7 +139,8 @@ def build_compare(out_path, cfg):
                       "win": (sum(float(t["pnl"]) > 0 for t in sells) / len(sells)) if sells else None,
                       "mdd": mdd, "open": list((st.get("positions") or {}).keys()),
                       "trades": list(reversed(trades))[:150]})
-        series.append({"key": name, "label": label.split(" (")[0], "slot": i + 1, "pts": pts})
+        short = {"baseline": "Fixed", "tuned": "Tuned", "ml": "ML", "dip": "Dip"}.get(name, name)
+        series.append({"key": name, "label": label.split(" (")[0], "short": short, "slot": i + 1, "pts": pts})
 
     ml = _json("data/models/ml_report.json")
     tuned = _json("data/models/tuned_params.json")
@@ -174,16 +175,16 @@ COMPARE = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <title>Paper Bot Lab</title>
 <style>
 :root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
---s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--good:#0ca30c;--bad:#d03b3b;--banner:#fff4d6;--bannerink:#5a4300;--track:#f0efec}
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--good:#0ca30c;--bad:#d03b3b;--banner:#fff4d6;--bannerink:#5a4300;--track:#f0efec}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;
---grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--banner:#2b2410;--bannerink:#f3d98a;--track:#2c2c2a}}
+--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--banner:#2b2410;--bannerink:#f3d98a;--track:#2c2c2a}}
 :root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;
---s1:#3987e5;--s2:#d95926;--s3:#199e70;--banner:#2b2410;--bannerink:#f3d98a;--track:#2c2c2a}
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--banner:#2b2410;--bannerink:#f3d98a;--track:#2c2c2a}
 *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
 main{max-width:1100px;margin:0 auto;padding:20px 16px 48px}h1{font-size:22px;margin:0 0 2px}h2{font-size:15px;margin:0 0 10px}
 .sub{color:var(--ink2);margin:0 0 12px}.banner{background:var(--banner);color:var(--bannerink);padding:10px 12px;border-radius:8px;margin-bottom:16px}
 .status{display:inline-flex;gap:6px;align-items:center;font-weight:600}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:16px}
 .card{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:14px;margin-bottom:16px;position:relative}
 .grid3 .card{margin:0}.acct h3{margin:0 0 2px;font-size:14px;display:flex;gap:8px;align-items:center}.sw{width:12px;height:12px;border-radius:3px;flex:none}
 .big{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums}.kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;color:var(--ink2);font-size:13px;margin-top:8px}
@@ -202,7 +203,7 @@ svg.chart{display:block;width:100%;height:300px}#tip{position:absolute;pointer-e
 th{color:var(--ink2);font-weight:600}.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.why{color:var(--ink2);min-width:300px}
 </style></head><body><main>
 <h1>Paper Bot Lab</h1><p class="sub" id="sub"></p>
-<div class="banner"><b>Three bots, simulated money only.</b> Each starts with the same balance and sees the same live Coinbase prices.
+<div class="banner"><b>Four bots, simulated money only.</b> Each starts with the same balance and sees the same live Coinbase prices.
 They differ only in how they decide. The model retrains every Sunday. Judge them after weeks, not hours.</div>
 <div class="grid3" id="accts"></div>
 <div class="card"><h2>Balance over time</h2><div class="legend" id="legend"></div><svg class="chart" id="chart" role="img" aria-label="Balance of the three accounts over time"></svg><div id="tip"></div></div>
@@ -246,12 +247,12 @@ const f=t=>new Date(t*1000).toLocaleDateString([], {month:'short',day:'numeric'}
 const ends=[];D.series.forEach(s=>{if(!s.pts.length)return;g+=`<polyline fill="none" stroke="${col(s.slot)}" stroke-width="2" stroke-linejoin="round" points="${s.pts.map(p=>x(p[0])+','+y(p[1])).join(' ')}"/>`;
 const e=s.pts[s.pts.length-1];ends.push({y:y(e[1]),x:x(e[0]),s})});
 ends.sort((a,b)=>a.y-b.y);for(let i=1;i<ends.length;i++)ends[i].ly=Math.max(ends[i].y,(ends[i-1].ly??ends[i-1].y)+14);if(ends[0])ends[0].ly=ends[0].y;
-ends.forEach(e=>{g+=`<circle cx="${e.x}" cy="${e.y}" r="4" fill="${col(e.s.slot)}" stroke="${css().getPropertyValue('--surface')}" stroke-width="2"/><text x="${e.x+8}" y="${e.ly+4}" font-size="11" fill="${css().getPropertyValue('--ink2')}">${esc(e.s.label.split(' ')[0])}</text>`});
+ends.forEach(e=>{g+=`<circle cx="${e.x}" cy="${e.y}" r="4" fill="${col(e.s.slot)}" stroke="${css().getPropertyValue('--surface')}" stroke-width="2"/><text x="${e.x+8}" y="${e.ly+4}" font-size="11" fill="${css().getPropertyValue('--ink2')}">${esc(e.s.short)}</text>`});
 g+=`<line id="xh" y1="${T}" y2="${H-B}" stroke="${css().getPropertyValue('--axis')}" visibility="hidden"/>`;svg.innerHTML=g;
 svg.onmousemove=ev=>{const r=svg.getBoundingClientRect(),mx=ev.clientX-r.left;const t=t0+(mx-L)/(W-L-R)*(t1-t0);
 const rows=D.series.map(s=>{let b=null;for(const p of s.pts){if(p[0]<=t+1)b=p}return b&&{s,b}}).filter(Boolean);if(!rows.length)return;
 const xh=svg.querySelector('#xh');const tx=Math.max(...rows.map(r=>r.b[0]));xh.setAttribute('x1',x(tx));xh.setAttribute('x2',x(tx));xh.setAttribute('visibility','visible');
-tip.style.display='block';tip.innerHTML=`${new Date(tx*1000).toLocaleString([], {month:'short',day:'numeric',hour:'numeric'})}<br>`+rows.map(r=>`<span class="sw" style="display:inline-block;width:8px;height:8px;background:${col(r.s.slot)}"></span> ${esc(r.s.label.split(' ')[0])}: ${money(r.b[1])}`).join('<br>');
+tip.style.display='block';tip.innerHTML=`${new Date(tx*1000).toLocaleString([], {month:'short',day:'numeric',hour:'numeric'})}<br>`+rows.map(r=>`<span class="sw" style="display:inline-block;width:8px;height:8px;background:${col(r.s.slot)}"></span> ${esc(r.s.short)}: ${money(r.b[1])}`).join('<br>');
 tip.style.left=Math.min(mx+16,W-180)+'px';tip.style.top='40px'};svg.onmouseleave=()=>{tip.style.display='none';svg.querySelector('#xh').setAttribute('visibility','hidden')}}
 draw();addEventListener('resize',draw);
 // learned
@@ -278,8 +279,8 @@ r('Picked combo: tuning year → unseen 90 days',`${pct(t.candidate_train.return
 r('Default settings: tuning year → unseen 90 days',`${pct(t.default_train.return)} → ${pct(t.default_unseen.return)}`)+
 `<p class="note"><b>${t.adopted?'Adopted':'Not adopted'}.</b> ${esc(t.verdict)} Tuned ${esc(t.trained_at)}.</p>`})();
 // history
-$('hist').innerHTML=D.history.length?`<table><thead><tr><th>Week</th><th class="num">Fixed</th><th class="num">Tuned</th><th class="num">ML</th><th class="num">AUC</th></tr></thead><tbody>`+
-D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.slice(0,10))}</td><td class="num ${cls(h.unseen_fixed)}">${pct(h.unseen_fixed)}</td><td class="num ${cls(h.unseen_tuned)}">${pct(h.unseen_tuned)}</td><td class="num ${cls(h.unseen_ml)}">${pct(h.unseen_ml)}</td><td class="num">${h.auc.toFixed(3)}</td></tr>`).join('')+'</tbody></table>':'<p class="muted">No training runs yet.</p>';
+$('hist').innerHTML=D.history.length?`<table><thead><tr><th>Trained (UTC)</th><th class="num">Fixed</th><th class="num">Tuned</th><th class="num">ML</th><th class="num">Dip</th><th class="num">AUC</th></tr></thead><tbody>`+
+D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.slice(0,16))}</td><td class="num ${cls(h.unseen_fixed)}">${pct(h.unseen_fixed)}</td><td class="num ${cls(h.unseen_tuned)}">${pct(h.unseen_tuned)}</td><td class="num ${cls(h.unseen_ml)}">${pct(h.unseen_ml)}</td><td class="num ${cls(h.unseen_dip)}">${h.unseen_dip==null?'—':pct(h.unseen_dip)}</td><td class="num">${h.auc.toFixed(3)}</td></tr>`).join('')+'</tbody></table>':'<p class="muted">No training runs yet.</p>';
 // trade logs
 function showLog(i){const a=D.accounts[i];[...$('tabs').children].forEach((b,j)=>b.setAttribute('aria-selected',j===i));
 $('log').innerHTML=a.trades.length?`<table><thead><tr><th>Time (UTC)</th><th>Pair</th><th>Side</th><th class="num">Price</th><th class="num">P&amp;L</th><th class="num">Balance</th><th>Reason</th></tr></thead><tbody>`+

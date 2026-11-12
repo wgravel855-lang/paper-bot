@@ -28,7 +28,7 @@ def simulate(hist, cfg, t0, t1, gate=None, warm=200):
         for pid, bars in hist.items():
             i = idx[pid].get(t)
             if i is not None and i >= warm:
-                view[pid] = bars[max(0, i - 199): i + 1]
+                view[pid] = bars[max(0, i - 299): i + 1]
         if gate is not None and "BTC-USD" in hist:
             i = idx["BTC-USD"].get(t)
             gate.btc = hist["BTC-USD"][max(0, i - 149): i + 1] if i is not None else None
