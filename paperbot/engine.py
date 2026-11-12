@@ -2,7 +2,7 @@
 from . import strategy, sizer, riskcheck
 
 
-def step(t, history, portfolio, cfg, logger, quotes=None):
+def step(t, history, portfolio, cfg, logger, quotes=None, gate=None, equity_on_close=True):
     """history: {pair: bars up to and including the latest closed bar}.
     quotes: optional {pair: {'bid','ask'}} for live spread-aware fills."""
     quotes = quotes or {}
@@ -18,7 +18,8 @@ def step(t, history, portfolio, cfg, logger, quotes=None):
             tr = portfolio.sell(pid, px, reason, t, bid=quotes.get(pid, {}).get("bid"))
             eq = portfolio.equity(prices)
             logger.trade(tr, eq)
-            logger.equity(t, eq)
+            if equity_on_close:
+                logger.equity(t, eq)
 
     # entries
     for pid, bars in history.items():
@@ -33,6 +34,12 @@ def step(t, history, portfolio, cfg, logger, quotes=None):
         if not ok:
             logger.activity(f"[rug-check] skipped {pid}: {why}")
             continue
+        if gate is not None:
+            ok, why = gate(pid, bars, t)
+            if not ok:
+                logger.activity(f"[gate] skipped {pid}: {why}")
+                continue
+            reason = f"{reason}; {why}"
         price = bars[-1]["close"]
         stop = price - cfg.stop_atr * a
         eq = portfolio.equity(prices)

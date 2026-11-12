@@ -1,4 +1,4 @@
-# Paper Bot
+# Paper Bot Lab
 
 A crypto trading bot that **only trades simulated money**. It reads real prices from
 Coinbase's public API, but it never places a real order and needs no account or keys.
@@ -17,25 +17,32 @@ Strategy (`paperbot/strategy.py`): trend-following breakout. It buys when price 
 20-bar high while EMA20 > EMA50 and volume is at least 1.5x average. It sells on a 2.5-ATR trailing
 stop, when EMA20 crosses below EMA50, or after 72 bars. All settings are in `paperbot/config.py`.
 
+## Three accounts, side by side
+| Account | How it decides |
+|---|---|
+| Fixed rules | The strategy above with fixed settings |
+| Self-tuning | Every Sunday it re-tests 12 setting combos on the past year, then keeps the winner only if it also wins on the last 90 days it never saw |
+| ML filter | Same buy signals, but a gradient-boosted model (scikit-learn) must approve each one. It predicts "price >1.5% higher in 24h" from 13 features (momentum, volume surge, volatility, Bitcoin trend, ...) |
+
+Training (`train.py`) runs every Sunday via `.github/workflows/train.yml`. Each run grades the tuned settings and
+the model on the last 90 days, which they were not trained on, and saves the results to `data/models/`.
+The live **report card** checks every ML prediction against what actually happened 24 hours later.
+
 ## Run it
 ```bash
-pip install requests
-python backtest.py --days 365          # replay the past year -> backtest_dashboard.html
-python bot.py                          # live paper trading, runs until stopped -> index.html
-python bot.py --reset                  # wipe the paper account and start over
+pip install -r requirements.txt
+python train.py                        # tune + train (about 2 minutes)
+python bot.py --once                   # one live paper cycle for all three accounts -> index.html
+python backtest.py --days 365          # replay the fixed-rules bot on the past year
+python bot.py --reset                  # wipe all paper accounts
 ```
+On GitHub, `.github/workflows/paper-bot.yml` runs `bot.py --once` every hour.
 
-## Honest results (backtests run 2026-11-12, $1,000 start)
-| Version | Period | Result | BTC buy & hold | Trades | Win rate | Max drawdown |
-|---|---|---|---|---|---|---|
-| 1-hour candles | 120 days | **-44%** | +10% | 280 | 19% | 44% |
-| 6-hour candles | 120 days | +29% | +10% | 49 | 31% | 8% |
-| 6-hour candles | 1 year | +16% | -31% | 126 | 30% | 14% |
-
-Caveats:
-- **The 6-hour version's profit comes from a few big winners.** The top 3 trades made more than the
-  whole year's net profit. Without them it loses money.
-- **Survivorship bias:** the backtest trades today's top coins, which are the ones that survived.
-  Real results would likely be worse.
-- **6h was chosen after seeing that 1h lost money.** That is a small form of overfitting. Paper-trade
-  for several weeks before believing any of these numbers.
+## Honest notes
+- First training run (2026-11-12): every setting combo **lost money** over the tuning year (-10% to -21%).
+  On the last 90 days the fixed rules made +32%, the tuned settings +31% with smaller drops, and the ML filter +35%.
+  That's one period, mostly a rising market, so it is not proof.
+- The model's accuracy score (AUC) was 0.586, where 0.5 is a coin flip. Situations it approved hit the +1.5% target
+  40% of the time vs 31% for all situations. That is a modest edge that fees can easily eat.
+- The backtest uses today's most-liquid coins (survivorship bias), so real results would likely be worse.
+- Paper-trade for months before trusting any of this.

@@ -1,0 +1,91 @@
+{
+ "trained_at": "2026-11-12 21:25 UTC",
+ "threshold": 0.3314097676332178,
+ "target": "price more than 1.5% higher 24 hours later",
+ "train_rows": 43826,
+ "unseen_days": 90,
+ "unseen_auc": 0.5864663779665775,
+ "unseen_base_rate": 0.3055088702147526,
+ "unseen_hit_rate_approved": 0.4036440084092502,
+ "unseen_avg_24h_return_approved": 0.01158103431702214,
+ "unseen_avg_24h_return_all": 0.004328069746798437,
+ "trading_unseen_ml": {
+  "return": 0.34913473754902746,
+  "max_dd": 0.10236664665705719,
+  "trades": 32,
+  "win_rate": 0.40625
+ },
+ "trading_unseen_fixed": {
+  "return": 0.32104820031232917,
+  "max_dd": 0.1094713125558332,
+  "trades": 39,
+  "win_rate": 0.358974358974359
+ },
+ "importances": [
+  {
+   "feature": "atr_pct",
+   "name": "Volatility",
+   "importance": 0.04084731525791152
+  },
+  {
+   "feature": "vol_ratio",
+   "name": "Volume surge",
+   "importance": 0.0074449735307118665
+  },
+  {
+   "feature": "breakout_dist",
+   "name": "Distance from 20-bar high",
+   "importance": 0.0038450977414379675
+  },
+  {
+   "feature": "btc_trend",
+   "name": "Bitcoin trend",
+   "importance": 0.003320111290005571
+  },
+  {
+   "feature": "ret_28",
+   "name": "1-week momentum",
+   "importance": 0.003279049213788632
+  },
+  {
+   "feature": "ret_1",
+   "name": "Last-candle return",
+   "importance": 0.003142577390097786
+  },
+  {
+   "feature": "rsi_14",
+   "name": "RSI (overbought/oversold)",
+   "importance": 0.0029640025569703057
+  },
+  {
+   "feature": "trend_20_50",
+   "name": "Trend strength (EMA20 vs EMA50)",
+   "importance": 0.002397351383772802
+  },
+  {
+   "feature": "btc_ret_4",
+   "name": "Bitcoin 1-day momentum",
+   "importance": 0.001967308999163605
+  },
+  {
+   "feature": "dist_ema20",
+   "name": "Distance from 20-bar average",
+   "importance": 0.0019118382157484366
+  },
+  {
+   "feature": "ret_12",
+   "name": "3-day momentum",
+   "importance": 0.0011259610278985255
+  },
+  {
+   "feature": "ret_4",
+   "name": "1-day momentum",
+   "importance": 0.0004319051072128784
+  },
+  {
+   "feature": "hour",
+   "name": "Time of day",
+   "importance": 0.0004299875986503536
+  }
+ ]
+}

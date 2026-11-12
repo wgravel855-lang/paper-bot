@@ -1,6 +1,4 @@
 {
- "cash": 1000.0,
- "positions": {},
  "last_bar": {
   "AAVE-USD": 1794484800,
   "ADA-USD": 1794484800,
@@ -17,5 +15,24 @@
   "XLM-USD": 1794484800,
   "XRP-USD": 1794484800,
   "ZEC-USD": 1794484800
- }
+ },
+ "universe": [
+  "BTC-USD",
+  "ETH-USD",
+  "ZEC-USD",
+  "XRP-USD",
+  "SOL-USD",
+  "NEAR-USD",
+  "HYPE-USD",
+  "QNT-USD",
+  "ADA-USD",
+  "UNI-USD",
+  "LINK-USD",
+  "AAVE-USD",
+  "XLM-USD",
+  "LTC-USD",
+  "SUI-USD"
+ ],
+ "scanned_at": 1794518921.8270402,
+ "last_run": 1794518969.702392
 }
