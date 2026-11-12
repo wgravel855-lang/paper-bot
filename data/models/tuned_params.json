@@ -1,5 +1,5 @@
 {
- "trained_at": "2026-11-12 22:37 UTC",
+ "trained_at": "2026-11-12 23:01 UTC",
  "params": {
   "breakout_lookback": 40,
   "stop_atr": 3.0,

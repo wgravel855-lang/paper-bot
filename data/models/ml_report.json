@@ -1,20 +1,20 @@
 {
- "trained_at": "2026-11-12 22:37 UTC",
- "threshold": 0.3414077710224486,
+ "trained_at": "2026-11-12 23:01 UTC",
+ "threshold": 0.34144539957062575,
  "target": "price more than 1.5% higher 24 hours later",
  "train_rows": 338627,
  "coins": 38,
  "unseen_days": 90,
- "unseen_auc": 0.5942256447398305,
+ "unseen_auc": 0.5965556151924316,
  "unseen_base_rate": 0.32728415138971023,
- "unseen_hit_rate_approved": 0.4053545746210864,
- "auc_avg_all_periods": 0.5657513786512397,
+ "unseen_hit_rate_approved": 0.4099399235390497,
+ "auc_avg_all_periods": 0.5646658269547264,
  "periods": 12,
  "trading_unseen_ml": {
-  "return": 0.41444611736082826,
-  "max_dd": 0.09043762684180534,
-  "trades": 30,
-  "win_rate": 0.4666666666666667
+  "return": 0.41112180919541363,
+  "max_dd": 0.0869800609158885,
+  "trades": 29,
+  "win_rate": 0.4827586206896552
  },
  "trading_unseen_fixed": {
   "return": 0.3210482003123254,
@@ -26,77 +26,77 @@
   {
    "feature": "atr_pct",
    "name": "Volatility",
-   "importance": 0.07553553823546703
+   "importance": 0.06611675189499884
   },
   {
    "feature": "btc_trend",
    "name": "Bitcoin trend",
-   "importance": 0.020224189972374112
-  },
-  {
-   "feature": "breakout_dist",
-   "name": "Distance from 5-day high",
-   "importance": 0.0028532834890966363
+   "importance": 0.01905455351823467
   },
   {
    "feature": "ret_168",
    "name": "1-week momentum",
-   "importance": 0.0024048038558750115
+   "importance": 0.0033068490211014176
   },
   {
-   "feature": "ret_6",
-   "name": "6-hour momentum",
-   "importance": 0.002389931464174544
-  },
-  {
-   "feature": "dist_ema24",
-   "name": "Distance from 1-day average",
-   "importance": 0.0023131017457238925
-  },
-  {
-   "feature": "trend_24_96",
-   "name": "Trend strength (1-day vs 4-day average)",
-   "importance": 0.0017305129018985916
+   "feature": "breakout_dist",
+   "name": "Distance from 5-day high",
+   "importance": 0.0025719307834301728
   },
   {
    "feature": "vol_ratio",
    "name": "Volume surge (last 6h)",
-   "importance": 0.0015552605654500045
-  },
-  {
-   "feature": "hour",
-   "name": "Time of day",
-   "importance": 0.001510338682184272
-  },
-  {
-   "feature": "ret_72",
-   "name": "3-day momentum",
-   "importance": 0.0008411280785282083
-  },
-  {
-   "feature": "ret_1",
-   "name": "Last-hour return",
-   "importance": 0.0007824980896961783
-  },
-  {
-   "feature": "rsi_14",
-   "name": "RSI (overbought/oversold)",
-   "importance": -0.0002736580262151511
-  },
-  {
-   "feature": "btc_ret_24",
-   "name": "Bitcoin 1-day momentum",
-   "importance": -0.0003095985422910674
+   "importance": 0.0023775085982279767
   },
   {
    "feature": "ret_24",
    "name": "1-day momentum",
-   "importance": -0.00044761441250799433
+   "importance": 0.002208991004355232
+  },
+  {
+   "feature": "ret_6",
+   "name": "6-hour momentum",
+   "importance": 0.0013228947189743618
+  },
+  {
+   "feature": "ret_72",
+   "name": "3-day momentum",
+   "importance": 0.00104216352278567
+  },
+  {
+   "feature": "hour",
+   "name": "Time of day",
+   "importance": 0.000906311603483608
+  },
+  {
+   "feature": "ret_1",
+   "name": "Last-hour return",
+   "importance": 0.0007488913946348171
+  },
+  {
+   "feature": "dist_ema24",
+   "name": "Distance from 1-day average",
+   "importance": 0.0006941611522890782
+  },
+  {
+   "feature": "rsi_14",
+   "name": "RSI (overbought/oversold)",
+   "importance": 0.00019682809676591084
+  },
+  {
+   "feature": "btc_ret_24",
+   "name": "Bitcoin 1-day momentum",
+   "importance": -0.0005251869069666052
+  },
+  {
+   "feature": "trend_24_96",
+   "name": "Trend strength (1-day vs 4-day average)",
+   "importance": -0.001647243676568988
   },
   {
    "feature": "drawdown_30d",
    "name": "Drop from 30-day high",
-   "importance": -0.002206412508081993
+   "importance": -0.003526630457678722
   }
  ]
 }
