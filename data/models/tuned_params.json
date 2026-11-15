@@ -1,15 +1,15 @@
 {
- "trained_at": "2026-11-12 23:01 UTC",
+ "trained_at": "2026-11-15 11:41 UTC",
  "params": {
   "breakout_lookback": 40,
   "stop_atr": 3.0,
   "volume_spike": 1.5
  },
  "last_year": {
-  "return": 0.22307572180752233,
-  "max_dd": 0.11166301270974854,
-  "trades": 89,
-  "win_rate": 0.3146067415730337
+  "return": 0.188000084713156,
+  "max_dd": 0.08779551229005922,
+  "trades": 81,
+  "win_rate": 0.35802469135802467
  },
- "verdict": "In the walk-forward test this tuning method beat the fixed rules in 7 of 12 periods (average +4.3% vs +1.7% per period)."
+ "verdict": "In the walk-forward test this tuning method beat the fixed rules in 8 of 12 periods (average +6.5% vs +1.5% per period)."
 }
