@@ -5,9 +5,9 @@
    "qty": 1.9846945841991421,
    "entry": 29.384354999999996,
    "cost": 58.66888405005709,
-   "stop": 24.327569198307348,
+   "stop": 24.75274753117308,
    "high": 30.6498,
-   "bars_held": 1,
+   "bars_held": 2,
    "t": 1795652734.74663,
    "reason": "BUY: close 29.2235 broke 10-bar high 26.8294; uptrend EMA20>50; volume 3.8x avg; size: risk 1% of $1,000.00 equity = $10.00, stop 17.2% below entry"
   }
