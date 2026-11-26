@@ -1,0 +1,2 @@
+time,pair,side,qty,price,fee,slippage_pct,pnl,equity,reason
+2026-11-26 00:25,VVV-USD,BUY,1.9846946,29.384355,0.3499,0.5504%,0.00,999.33,"BUY: close 29.2235 broke 10-bar high 26.8294; uptrend EMA20>50; volume 3.8x avg; size: risk 1% of $1,000.00 equity = $10.00, stop 17.2% below entry"

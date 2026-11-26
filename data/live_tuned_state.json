@@ -1,5 +1,16 @@
 {
- "cash": 1000.0,
- "positions": {},
+ "cash": 941.331115949943,
+ "positions": {
+  "VVV-USD": {
+   "qty": 1.9846945841991421,
+   "entry": 29.384354999999996,
+   "cost": 58.66888405005709,
+   "stop": 24.184941382662327,
+   "high": 29.384354999999996,
+   "bars_held": 0,
+   "t": 1795652734.74663,
+   "reason": "BUY: close 29.2235 broke 10-bar high 26.8294; uptrend EMA20>50; volume 3.8x avg; size: risk 1% of $1,000.00 equity = $10.00, stop 17.2% below entry"
+  }
+ },
  "last_bar": {}
 }
